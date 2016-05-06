@@ -14,21 +14,37 @@
    (+ (str/index-of abc letter) (count abc)))
   )
 
+(defn cycleKeyword [keyword message]
+  (apply str (take (count message) (cycle keyword)))
+  )
+
+(defn readAbc [f a b]
+  (apply str
+         (map f a b)
+         )
+  )
+
 (defn encode [keyword message]
-  (let [keywordcycled (apply str (take (count message) (cycle keyword)))]
-    (apply str
-           (map
-            #(get (getline (str %2)) (str/index-of abc %1))
-            keywordcycled
-            message)
-           )
+  (let [keywordcycled (cycleKeyword keyword message)]
+    (readAbc #(get (getline (str %2)) (str/index-of abc %1))
+             keywordcycled
+             message
+             )
     )
   )
 
 (encode "scones" "meetmebythetree")
-
+           
 (defn decode [keyword message]
-  "decodeme")
+  (let [keywordcycled (cycleKeyword keyword message)]
+    (readAbc #(get abc (str/index-of (getline (str %1)) %2))
+             keywordcycled
+             message
+             )
+    )
+  )
+
+(decode "scones" "egsgqwtahuiljgs")
 
 (defn decipher [cipher message]
   "decypherme")

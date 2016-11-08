@@ -1,0 +1,52 @@
+(ns fox-goose-bag-of-corn.puzzle
+    (:require [clojure.test :refer :all]
+            [clojure.set]))
+
+(def start-pos [[:fox :goose :corn :you] [:boat] []])
+
+; You must get the fox, goose, and bag of corn safely across the other side of the river
+(def final-pos [[] [:boat] [:fox :goose :corn :you]])
+
+; You can only carry 1 item on the boat across with you.
+(defn validate-only-you [[_ b _]]
+  (if (some #(= :you %) b) ; if you're on the boat
+    (< (count b) 4) ; only one item with you and the boat
+    true))
+
+; The fox cannot be left alone with the goose, (or it will be eaten).
+; The goose cannot be left alone with the corn, (or it will be eaten).
+(defn validate-its-cool [a]
+  (not (or
+   (some true? (map #(= [:fox :goose] (sort %)) a))
+   (some true? (map #(= [:corn :goose] (sort %)) a))
+   (some true? (map #(= [:corn :fox :goose] (sort %)) a)))))
+
+(defn are-you? [a]
+  (true? (some #(= :you %) a)))
+
+(defn with-you [step]
+  (first (filterv are-you? step)))
+
+(defn river-crossing-plan []
+
+  )
+
+(defn river-crossing-plan2[]
+  [
+   [[:fox :goose :corn :you] [:boat] []]
+   [[:fox :corn] [:you :boat :goose] []]
+   [[:fox :corn] [:boat] [:goose :you]]
+   [[:fox :corn] [:boat :you] [:goose]]
+   [[:fox :corn :you] [:boat] [:goose]]
+   [[:fox] [:you :boat :corn] [:goose]]
+   [[:fox] [:boat] [:goose :corn :you]]
+   [[:fox] [:boat :you :goose] [:corn]]
+   [[:fox :you :goose] [:boat] [:corn]]
+   [[:goose] [:you :boat :fox] [:corn]]
+   [[:goose] [:boat] [:corn :fox :you]]
+   [[:goose] [:you :boat] [:corn :fox]]
+   [[:goose :you] [:boat] [:corn :fox]]
+   [[] [:you :boat :goose] [:corn :fox]]
+   [[] [:boat] [:corn :fox :goose :you]]
+   ]
+  )

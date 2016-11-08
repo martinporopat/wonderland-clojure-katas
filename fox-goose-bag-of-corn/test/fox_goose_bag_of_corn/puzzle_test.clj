@@ -1,5 +1,7 @@
+
 (ns fox-goose-bag-of-corn.puzzle-test
   (:require [clojure.test :refer :all]
+            [fox-goose-bag-of-corn.puzzle-logic :refer :all]
             [fox-goose-bag-of-corn.puzzle :refer :all]
             [clojure.set]))
 

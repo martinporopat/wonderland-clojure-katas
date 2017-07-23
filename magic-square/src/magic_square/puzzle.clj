@@ -9,7 +9,7 @@
 (defn super+ [a b c col]
   (reduce + [(get col a) (get col b) (get col c)]))  
 
-(defn magic-square [values]
+(defn magic-square1 [values]
   (let [c (shuffle values)
         magic-number (super+ 0 3 6 c)]
     (if (and

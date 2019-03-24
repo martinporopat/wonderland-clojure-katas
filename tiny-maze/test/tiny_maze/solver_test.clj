@@ -1,5 +1,3 @@
-
-
 (ns tiny-maze.solver-test
   (:require [clojure.test :refer :all]
             [tiny-maze.solver :refer :all]))
@@ -12,6 +10,20 @@
           sol [[:x :x 1]
                [1  :x 1]
                [1  :x :x]]]
+      (is (= sol (solve-maze maze)))))
+
+
+  (testing "can find way to exit with 5x5 maze"
+    (let [maze [[:S 0 0 0 0]
+                [1  0 1 1 1]
+                [0  0 0 0 0]
+                [1  0 1 0 0]
+                [1  1 :E 0 0]]
+          sol [[:x :x 0  0  0]
+               [1  :x 1  1  1]
+               [0  :x :x :x 0]
+               [1  0  1  :x 0]
+               [1  1  :x :x 0]]]
       (is (= sol (solve-maze maze)))))
 
     (testing "can find way to exit with 4x4 maze"

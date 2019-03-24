@@ -1,38 +1,51 @@
-(ns tiny-maze.solver
-  (:require [clojure.core.async :as async]))
+(ns tiny-maze.solver)
 
-(def maze [[:S 0 1]
-           [1 0 1]
-           [1 0 :E]])
-
-(def start-pos
+(defn start-pos [maze]
   (let [finding-s (map #(.indexOf % :S) maze)
         y  (first (filter (complement neg?) finding-s))
         x (.indexOf finding-s y)]
     [x y])) ; [0 0]
 
-(def step1 (assoc-in maze start-pos :x)) 
+; Reciben la posicion [x y]
+(defn can-walk? [a maze]
+  (let [[x y] a
+        value ((maze x) y)]
+    (or (= value :E)
+        (and (number? value) (zero? value)))))
 
-(defn next-moves [pos]
+(defn is-end? [a maze]
+  (let [[x y] a
+        value ((maze x) y)]
+    (= value :E)))
+
+(defn goes-outbounds? [p maze]
+  (and (>= (- (count maze) 1) p) (<= 0 p)))
+
+(defn next-moves [pos previous-pos maze]
   (let [[x y] pos
-      right [(+ x 1) y]
-      up [x (- y 1)]
-      down [x (+ y 1)]
-      left [(- x 1) y]      
-      moves (filter #(every? (fn [p] (<= 0 p)) %) [right up down left]) ]
-    moves))
+        right [(+ x 1) y]
+        up [x (- y 1)]
+        down [x (+ y 1)]
+        left [(- x 1) y]      
+        moves (filter #(can-walk? % maze)
+                      (filter (fn [a] (every? #(goes-outbounds? % maze) a))
+                       [right up down left]))]
+    (filter #(not= previous-pos %) moves)))
 
-(next-moves start-pos)
+(defn convert-to-x [a maze-upd]
+  (let [[x y] a]
+    (assoc-in maze-upd [x y] :x)))
 
-(get-in maze start-pos) ; :S
+(defn solve-maze-h [maze pos previous-pos]
+  (let [next-positions (remove nil? pos)]
+     (for [i next-positions]
+       (if (is-end? i maze)
+         (convert-to-x i maze)
+         (first (remove empty?
+                        (solve-maze-h
+                         (convert-to-x i maze)
+                         (next-moves i previous-pos maze)
+                         i)))))))
 
-(defn solve-maze [maze])
-
-(solve-maze maze)
-
-; desde la :S o un 0
-; cambiar la :S por :x
-; analizar 4 movimientos
-; si encuentra la :E, cambiar la :E por :x y devolver el maze
-; si encuentra un 0, avanzar!
-; sino, terminar
+(defn solve-maze [maze-init]
+  (first (solve-maze-h maze-init [(start-pos maze-init)] [0 0])))
